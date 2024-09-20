@@ -1,76 +1,9 @@
-const invoices = [
-    {
-        name: 'Compras de oficina',
-        client: {
-            name: 'Jhon',
-            lastname: 'Doe',
-        },
-        items: [
-            {
-                producto: 'keyboard',
-                precio: 399,
-                cantidad: 2,
-            },
-            {
-                producto: 'mouse',
-                precio: 200,
-                cantidad: 1,
-            },
-            {
-                producto: 'paper',
-                precio: 100,
-                cantidad: 10,
-            },
-        ]
-    },
-    {
-        name: 'Compras de computacion',
-        client: {
-            name: 'Pepe',
-            lastname: 'Guatemalteco',
-        },
-        items: [
-            {
-                producto: 'keyboard',
-                precio: 399,
-                cantidad: 2,
-            },
-            {
-                producto: 'screen 17',
-                precio: 400,
-                cantidad: 1,
-            },
-            {
-                producto: 'cpu intel',
-                precio: 1000,
-                cantidad: 10,
-            },
-        ]
-    },
-    {
-        id: 10,
-        name: 'Compras de papeleria',
-        client: {
-            name: 'Ivan',
-            lastname: 'Acebo',
-        },
-        items: [
-            {
-                producto: 'pencil',
-                precio: 250,
-                cantidad: 1,
-            },
-            {
-                producto: 'paper',
-                precio: 10,
-                cantidad: 10,
-            },
-        ]
-    }
-];
+// ruta del archivo a importar y (export) en el archivo a exportar
+import {invoices, papper, invoicesByClientName} from './data/invoices';
 
 console.log(invoices);
 
+// .map para crear un nuevo array. Siempre tiene que devolver algo
 const invoicesCloneName = invoices.map(i => {
     return i.name;
 });
@@ -82,3 +15,22 @@ const invoicesCloneClient = invoices.map(i => {
 });
 
 console.log(invoicesCloneClient);
+
+// .find para hacer busquedas dentro de un array
+const invoiceById = invoices.find(i => i.id ===2)
+console.log(invoiceById);
+
+// .filter si se cumple una condicion va a crear un nuevo array que cumpla dicha condicion
+const invoiceFilter = invoices.filter(i => i.items.includes(papper));
+console.log(invoiceFilter);
+
+console.log('Filter eliminar un id en concreto')
+const invoiceDeleted = invoices.filter(i => i.id != 2);
+console.log(invoiceDeleted);
+
+// .some devuelve un bolleano para saber si se cumple 
+const result = invoices.some(i => i.client.name === 'Ivan');
+console.log(result);
+
+console.log('buscar en el array con un export')
+console.log(invoicesByClientName('Ivan'));
