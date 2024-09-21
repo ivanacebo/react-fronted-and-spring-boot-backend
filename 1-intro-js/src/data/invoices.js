@@ -1,12 +1,12 @@
 // export palabra clave para decir que queremos exportar de un archivo.
 
-export const papper = {
+const papper = {
     producto: 'papper',
     precio: 100,
     cantidad: 10,
 };
 
-export const invoices = [
+const invoices = [
     {
         id: 1,
         name: 'Compras de oficina',
@@ -71,6 +71,35 @@ export const invoices = [
     }
 ];
 
-export const invoicesByClientName = (clientName) => {
+const invoicesById = (id) => {
+    return invoices.find(i => i.id ===id)
+}
+
+// función promesa 
+const findInvoiceById = (id) => {
+    const promise = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const result = invoicesById(id);
+            
+            if (result) {
+                resolve(result);
+            } else {
+                reject(`Error: No existe la factura buscada por este id`);
+            }
+        }, 1500);
+    });
+
+    return promise;
+}
+
+const invoicesByClientName = (clientName) => {
     return invoices.find(i => i.client.name == clientName);
+}
+
+export {
+    papper,
+    invoices,
+    invoicesById,
+    findInvoiceById,
+    invoicesByClientName
 }
