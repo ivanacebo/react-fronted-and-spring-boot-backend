@@ -1,55 +1,37 @@
 import { getInvoice } from "../services/getInvoice";
+import { ClientDetail } from "./ClientDetail";
+import { CompanyDetail } from "./CompanyDetail";
+import { InvoiceView } from "./InvoiceView";
+import { ListItemsView } from "./ListItemsView";
 
 export const InvoiceApp = () => {
   const { id, name, client, company, items } = getInvoice();
-  const { name: nameClient, lastName, address } = client;
-  const { country, city, street, number } = client.address;
 
   return (
     <>
-      <h1>Ejemplo de una Factura</h1>
-      <ul>
-        <li>Id: {id}</li>
-        <li>Name: {name}</li>
-      </ul>
+      <div className="container">
+        <div className="card my-3">
+          <div className="card-header">
+            <h1>Ejemplo de una Factura</h1>
+          </div>
+          <div className="card-body">
+            <InvoiceView id={id} name={name} />
 
-      <h3>Datos del cliente</h3>
-      <ul>
-        <li>
-          nombre: {nameClient} {lastName}
-        </li>
-        <li>estado: {country}</li>
-        <li>ciudad: {city}</li>
-        <li>
-          calle: {street} {number}
-        </li>
-      </ul>
+            <div className="row my-3">
+              <div className="col">
+                <ClientDetail client={client} title={'Datos del cliente'} />
+              </div>
 
-      <h3>Datos de la Empresa</h3>
-      <ul>
-        <li>compañia: {company.name}</li>
-        <li>numero fiscal: {company.fiscalNumber}</li>
-      </ul>
+              <div className="col">
+                <CompanyDetail company={company} title={'Datos de la empresa'} />
+              </div>
+            </div>
 
-      <h3>Productos de la factura</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Prodcuto</th>
-            <th>Precio</th>
-            <th>Cantidad</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map(({ id, product, price, quantity }) => (
-            <tr key = {id}>
-              <td>{product}</td>
-              <td>{price}</td>
-              <td>{quantity}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <ListItemsView items={items} title ={'Productos de la factura'} />
+            
+          </div>
+        </div>
+      </div>
     </>
   );
 };
