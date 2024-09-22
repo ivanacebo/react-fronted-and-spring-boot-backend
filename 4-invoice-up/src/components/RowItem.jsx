@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export const RowItem = ({ product, price, quantity }) => {
   return (
     <>
@@ -9,3 +11,9 @@ export const RowItem = ({ product, price, quantity }) => {
     </>
   );
 };
+
+RowItem.propTypes = {
+  product : PropTypes.string.isRequired,
+  price : PropTypes.number.isRequired,
+  quantity : PropTypes.number.isRequired
+}

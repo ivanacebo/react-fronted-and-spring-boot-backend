@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export const CompanyDetail = ({title, company }) => {
   return (
     <>
@@ -11,3 +13,8 @@ export const CompanyDetail = ({title, company }) => {
     </>
   );
 };
+
+CompanyDetail.propTypes = {
+  title : PropTypes.string.isRequired,
+  company : PropTypes.object.isRequired
+}
