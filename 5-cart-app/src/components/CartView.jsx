@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { calculateTotal } from "../services/productService";
+import { useNavigate } from "react-router-dom";
 
 export const CartView = ({ handlerDelete, items }) => {
+  const navigate = useNavigate();
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
@@ -11,6 +13,10 @@ export const CartView = ({ handlerDelete, items }) => {
   const onDeleteProduct = (id) => {
     console.log(`Eliminando el producto`);
     handlerDelete(id);
+  };
+
+  const onCalatog = () => {
+    navigate("/catalog");
   };
 
   return (
@@ -55,6 +61,10 @@ export const CartView = ({ handlerDelete, items }) => {
           </tr>
         </tfoot>
       </table>
+
+      <button className="btn btn-success" onClick={onCalatog}>
+        Seguir comprando
+      </button>
     </>
   );
 };

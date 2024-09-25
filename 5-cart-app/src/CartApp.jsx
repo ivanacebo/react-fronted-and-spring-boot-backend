@@ -1,13 +1,9 @@
-import { useReducer, useEffect } from "react";
 import { CartView } from "./components/CartView";
 import { CatalogView } from "./components/CatalogView";
-import { itemsReducer } from "./reducer/itemsReducer";
-import {
-  addProductCart,
-  deleteProductCart,
-  updateQuantityProductCart,
-} from "./reducer/itemsActions";
+import { Navbar } from "./components/Navbar";
 import { useItemsCart } from "./hooks/useItemsCart";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { CartRoutes } from "./routes/CartRoutes";
 
 export const CartApp = () => {
   const { cartItems, handlerAddProductCart, handlerDeleteProductCart } =
@@ -15,18 +11,14 @@ export const CartApp = () => {
 
   return (
     <>
+      <Navbar></Navbar>
       <div className="container my-4">
         <h3>Cart App</h3>
-        <CatalogView handler={handlerAddProductCart} />
-
-        {cartItems?.length <= 0 || (
-          <div className="my-4 w-50">
-            <CartView
-              items={cartItems}
-              handlerDelete={handlerDeleteProductCart}
-            />
-          </div>
-        )}
+        <CartRoutes
+          cartItems={cartItems}
+          handlerAddProductCart={handlerAddProductCart}
+          handlerDeleteProductCart={handlerDeleteProductCart}
+        />
       </div>
     </>
   );
