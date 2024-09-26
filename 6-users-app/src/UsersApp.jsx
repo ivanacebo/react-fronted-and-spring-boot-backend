@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { UserForm } from "./components/UserForm";
 import { UsersList } from "./components/UsersList";
 import { usersReducer } from "./reducers/usersReducer";
@@ -6,7 +6,7 @@ import { usersReducer } from "./reducers/usersReducer";
 const initialUsers = [
   {
     id: 1,
-    userName: "Pepe",
+    username: "Pepe",
     password: "12345",
     email: "pepe@correo.com",
   },
@@ -20,6 +20,7 @@ const initialUserForm = {
 
 export const UsersApp = () => {
   const [users, dispatch] = useReducer(usersReducer, initialUsers);
+  const [userSelected, setUserSelected] = useState(initialUserForm);
 
   const handlerAddUser = (user) => {
     //console.log(user);
@@ -37,6 +38,11 @@ export const UsersApp = () => {
     });
   };
 
+  const handlerUserSelectedForm = (user) => {
+    // console.log(user);
+    setUserSelected({ ...user });
+  };
+
   return (
     <>
       <div className="container my-4">
@@ -46,6 +52,7 @@ export const UsersApp = () => {
             <UserForm
               initialUserForm={initialUserForm}
               handlerAddUser={handlerAddUser}
+              userSelected={userSelected}
             />
           </div>
 
@@ -55,7 +62,11 @@ export const UsersApp = () => {
                 No hay usuarios en el sistea
               </div>
             ) : (
-              <UsersList users={users} handlerRemoveUser={handlerRemoveUser} />
+              <UsersList
+                users={users}
+                handlerRemoveUser={handlerRemoveUser}
+                handlerUserSelectedForm={handlerUserSelectedForm}
+              />
             )}
           </div>
         </div>

@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export const UserForm = ({handlerAddUser, initialUserForm}) => {
-  const [userForm, setUSerForm] = useState(initialUserForm);
+export const UserForm = ({ userSelected, handlerAddUser, initialUserForm }) => {
+  const [userForm, setUserForm] = useState(initialUserForm);
   const { username, password, email } = userForm;
 
-  const onImputChange = ({ target }) => {
+  useEffect(() => {
+    setUserForm({
+      ...userSelected,
+      // password: "",
+    });
+  }, [userSelected]);
+
+  const onInputChange = ({ target }) => {
     const { name, value } = target;
-    setUSerForm({
+    setUserForm({
       ...userForm,
       [name]: value,
     });
@@ -24,7 +31,7 @@ export const UserForm = ({handlerAddUser, initialUserForm}) => {
 
     // Guardar el user form en el listado de usuarios
     handlerAddUser(userForm);
-    setUSerForm(initialUserForm);
+    setUserForm(initialUserForm);
   };
 
   return (
@@ -34,7 +41,7 @@ export const UserForm = ({handlerAddUser, initialUserForm}) => {
         placeholder="Username"
         name="username"
         value={username}
-        onChange={onImputChange}
+        onChange={onInputChange}
       />
       <input
         className="form-control my-3 w-75"
@@ -42,14 +49,14 @@ export const UserForm = ({handlerAddUser, initialUserForm}) => {
         type="password"
         name="password"
         value={password}
-        onChange={onImputChange}
+        onChange={onInputChange}
       />
       <input
         className="form-control my-3 w-75"
         placeholder="Email"
         name="email"
         value={email}
-        onChange={onImputChange}
+        onChange={onInputChange}
       />
       <button className="btn btn-primary" type="submit">
         Crear
