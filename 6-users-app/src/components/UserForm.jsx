@@ -1,12 +1,6 @@
 import { useState } from "react";
 
-const initialUserForm = {
-  username: "",
-  password: "",
-  email: "",
-};
-
-export const UserForm = () => {
+export const UserForm = ({handlerAddUser, initialUserForm}) => {
   const [userForm, setUSerForm] = useState(initialUserForm);
   const { username, password, email } = userForm;
 
@@ -29,6 +23,7 @@ export const UserForm = () => {
     console.log(userForm);
 
     // Guardar el user form en el listado de usuarios
+    handlerAddUser(userForm);
     setUSerForm(initialUserForm);
   };
 
