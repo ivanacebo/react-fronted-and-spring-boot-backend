@@ -4,7 +4,6 @@ export const UserRow = ({
   id,
   username,
   email,
-  password,
 }) => {
   return (
     <tr>
@@ -15,7 +14,7 @@ export const UserRow = ({
         <button
           type="button"
           className="btn btn-secondary btm-sm"
-          onClick={() => handlerUserSelectedForm({ id, username, email, password})}
+          onClick={() => handlerUserSelectedForm({ id, username, email})}
         >
           Update
         </button>
