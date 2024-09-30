@@ -6,7 +6,7 @@ const initialLoginForm = {
   password: "",
 };
 
-export const LoginPage = ({handlerLogin}) => {
+export const LoginPage = ({ handlerLogin }) => {
   const [loginForm, setLoginForm] = useState(initialLoginForm);
 
   const { username, password } = loginForm;
@@ -31,7 +31,7 @@ export const LoginPage = ({handlerLogin}) => {
       );
     }
 
-    handlerLogin({username, password});
+    handlerLogin({ username, password });
 
     setLoginForm(initialLoginForm);
   };
