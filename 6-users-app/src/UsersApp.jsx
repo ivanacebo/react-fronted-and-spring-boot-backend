@@ -1,59 +1,47 @@
-import { UserModalForm } from "./components/UserModalForm";
-import { UsersList } from "./components/UsersList";
-import { useUsers } from "./hooks/useUsers";
-import "./styles.css";
+import { useReducer } from "react";
+import { LoginPage } from "./auth/pages/LoginPAge";
+import { UsersPage } from "./pages/UsersPage";
+import { loginReducer } from "./auth/reducers/loginReducer";
+import Swal from "sweetalert2";
+import { Navbar } from "./components/layout/Navbar";
+
+const initialLogin = JSON.parse(sessionStorage.getItem("login")) || {
+  isAuth: false,
+  user: undefined,
+};
 
 export const UsersApp = () => {
-  const {
-    users,
-    userSelected,
-    initialUserForm,
-    visibleForm,
-    handlerAddUser,
-    handlerRemoveUser,
-    handlerUserSelectedForm,
-    handlerOpenForm,
-    handlerCloseForm,
-  } = useUsers();
+  const [login, dispatch] = useReducer(loginReducer, initialLogin);
+
+  const handlerLogin = ({ username, password }) => {
+    if (username === "admin" && password === "admin123") {
+      const user = { username: "admin" };
+      dispatch({ type: "login", payload: user });
+      sessionStorage.setItem("login", JSON.stringify({ isAuth: true, user }));
+    } else {
+      Swal.fire(
+        "Error de validacion",
+        "Usuario o contraseña incorrectos",
+        "error"
+      );
+    }
+  };
+
+  const handlerLogout = () => {
+    dispatch({ type: "logout" });
+    sessionStorage.removeItem("login");
+  };
 
   return (
     <>
-      {!visibleForm || (
-        <UserModalForm
-          userSelected={userSelected}
-          initialUserForm={initialUserForm}
-          handlerAddUser={handlerAddUser}
-          handlerCloseForm={handlerCloseForm}
-        />
+      {login.isAuth ? (
+        <>
+          <Navbar login={login} handlerLogout={handlerLogout} />
+          <UsersPage />
+        </>
+      ) : (
+        <LoginPage handlerLogin={handlerLogin} />
       )}
-
-      <div className="container my-4">
-        <h2>Users APP</h2>
-        <div className="row">
-          <div className="col">
-            {visibleForm || (
-              <button
-                className="btn btn-primary my-2"
-                onClick={handlerOpenForm}
-              >
-                Nuevo Usuario
-              </button>
-            )}
-
-            {users.length === 0 ? (
-              <div className="alert alert-warning">
-                No hay usuarios en el sistea
-              </div>
-            ) : (
-              <UsersList
-                users={users}
-                handlerRemoveUser={handlerRemoveUser}
-                handlerUserSelectedForm={handlerUserSelectedForm}
-              />
-            )}
-          </div>
-        </div>
-      </div>
     </>
   );
 };
