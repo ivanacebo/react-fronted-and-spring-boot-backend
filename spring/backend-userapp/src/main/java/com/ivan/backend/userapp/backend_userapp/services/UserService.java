@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.ivan.backend.userapp.backend_userapp.models.entities.User;
-import com.ivan.backend.userapp.backend_userapp.models.entities.UserRequest;
+import com.ivan.backend.userapp.backend_userapp.models.request.UserRequest;
 
 public interface UserService {
 

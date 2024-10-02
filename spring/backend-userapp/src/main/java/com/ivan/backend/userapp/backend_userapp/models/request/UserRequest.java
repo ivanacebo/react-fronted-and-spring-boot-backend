@@ -1,4 +1,4 @@
-package com.ivan.backend.userapp.backend_userapp.models.entities;
+package com.ivan.backend.userapp.backend_userapp.models.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
