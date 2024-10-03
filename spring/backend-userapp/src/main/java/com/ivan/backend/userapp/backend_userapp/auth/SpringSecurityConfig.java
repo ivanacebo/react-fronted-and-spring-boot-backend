@@ -1,14 +1,21 @@
 package com.ivan.backend.userapp.backend_userapp.auth;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.ivan.backend.userapp.backend_userapp.auth.filters.JwtAuthenticationFilter;
+
 @Configuration
 public class SpringSecurityConfig {
+
+    @Autowired
+    private AuthenticationConfiguration authConfig;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -19,6 +26,7 @@ public class SpringSecurityConfig {
                 .anyRequest()
                 .authenticated()
                 .and()
+                .addFilter(new JwtAuthenticationFilter(authConfig.getAuthenticationManager()))
                 .csrf(config -> config.disable())
                 .sessionManagement(managment -> managment.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
