@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         logger.info("password desde request InputStream(raw) " + password);
         try {
             user = new ObjectMapper().readValue(request.getInputStream(), User.class);
-            username = user.getPassword();
+            username = user.getUsername();
             password = user.getPassword();
         } catch (StreamReadException e) {
             e.printStackTrace();
@@ -62,17 +62,24 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((org.springframework.security.core.userdetails.User) authResult.getPrincipal())
                 .getUsername();
 
+        // Crear el token con el username
         String originalInput = "algun_token_con_alguna_frase_secreta." + username;
-
         String token = Base64.getEncoder().encodeToString(originalInput.getBytes());
 
+        // Añadir el token al header de la respuesta
         response.addHeader("Authorization", "Bearer " + token);
 
+        // Crear el cuerpo de la respuesta
         Map<String, Object> body = new HashMap<>();
         body.put("token", token);
-        body.put("message", String.format(token, "Hola %s, has iniciado session con exito!", username));
+
+        // Crear un mensaje amigable con el nombre del usuario
+        String message = String.format("Hola %s, has iniciado sesión con éxito!", username); // Corregido
+
+        body.put("message", message); // Usar el mensaje adecuado
         body.put("username", username);
 
+        // Escribir la respuesta JSON
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
         response.setStatus(200);
         response.setContentType("application/json");
