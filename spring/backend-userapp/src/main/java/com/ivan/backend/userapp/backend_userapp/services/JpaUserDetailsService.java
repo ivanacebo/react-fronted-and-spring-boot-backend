@@ -1,8 +1,8 @@
 package com.ivan.backend.userapp.backend_userapp.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,8 +33,9 @@ public class JpaUserDetailsService implements UserDetailsService {
         }
         com.ivan.backend.userapp.backend_userapp.models.entities.User user = o.orElseThrow();
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(r -> new SimpleGrantedAuthority(r.getName()))
+                .collect(Collectors.toList());
 
         return new User(user.getUsername(), user.getPassword(), true, true, true,
                 true, authorities);

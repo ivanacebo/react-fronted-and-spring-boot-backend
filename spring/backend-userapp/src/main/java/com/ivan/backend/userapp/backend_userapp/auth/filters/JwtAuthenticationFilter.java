@@ -1,11 +1,10 @@
 package com.ivan.backend.userapp.backend_userapp.auth.filters;
 
 import java.io.IOException;
-import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.security.access.method.P;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +16,7 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ivan.backend.userapp.backend_userapp.models.entities.User;
 
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,8 +66,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .getUsername();
 
         // Crear el token con el username
-        String originalInput = SECRET_KEY + "." + username;
-        String token = Base64.getEncoder().encodeToString(originalInput.getBytes());
+        String token = Jwts.builder().setSubject(username).signWith(SECRET_KEY)
+                .setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .compact();
 
         // Añadir el token al header de la respuesta
         response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);

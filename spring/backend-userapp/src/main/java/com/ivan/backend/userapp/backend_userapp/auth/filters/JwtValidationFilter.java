@@ -1,7 +1,6 @@
 package com.ivan.backend.userapp.backend_userapp.auth.filters;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -16,6 +15,9 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,14 +43,12 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
         }
 
         String token = header.replace(PREFIX_TOKEN, "");
-        byte[] tokenDecodeBytes = Base64.getDecoder().decode(token);
-        String tokenDecode = new String(tokenDecodeBytes);
 
-        String[] tokenArr = tokenDecode.split("\\.");
-        String secret = tokenArr[0];
-        String username = tokenArr[1];
+        try {
+            Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
 
-        if (SECRET_KEY.equals(secret)) {
+            String username = claims.getSubject();
+
             List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
@@ -57,8 +57,9 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(request, response);
-        } else {
+        } catch (JwtException e) {
             Map<String, String> body = new HashMap<>();
+            body.put("error", e.getMessage());
             body.put("message", "El token no es valido");
             response.getWriter().write(new ObjectMapper().writeValueAsString(body));
             response.setStatus(403);
