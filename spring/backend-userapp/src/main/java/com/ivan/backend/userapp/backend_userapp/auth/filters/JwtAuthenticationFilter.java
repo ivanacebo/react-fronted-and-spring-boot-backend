@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
@@ -16,6 +18,7 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ivan.backend.userapp.backend_userapp.models.entities.User;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -64,10 +67,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String username = ((org.springframework.security.core.userdetails.User) authResult.getPrincipal())
                 .getUsername();
+        Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
+        boolean isAdmin = roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
 
-        // Crear el token con el username
-        String token = Jwts.builder().setSubject(username).signWith(SECRET_KEY)
-                .setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 3600000))
+        // Crear un Map para los claims
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
+        claims.put("isAdmin", isAdmin);
+
+        // Crear el token con el username y los claims
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .setSubject(username)
+                .signWith(SECRET_KEY)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
                 .compact();
 
         // Añadir el token al header de la respuesta
@@ -78,14 +92,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         body.put("token", token);
 
         // Crear un mensaje amigable con el nombre del usuario
-        String message = String.format("Hola %s, has iniciado sesión con éxito!", username); // Corregido
-
-        body.put("message", message); // Usar el mensaje adecuado
+        String message = String.format("Hola %s, has iniciado sesión con éxito!", username);
+        body.put("message", message);
         body.put("username", username);
 
         // Escribir la respuesta JSON
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-        response.setStatus(200);
+        response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
     }
 

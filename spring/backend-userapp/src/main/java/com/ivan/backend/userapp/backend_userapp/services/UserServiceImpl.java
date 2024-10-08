@@ -3,12 +3,15 @@ package com.ivan.backend.userapp.backend_userapp.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ivan.backend.userapp.backend_userapp.models.dto.UserDto;
+import com.ivan.backend.userapp.backend_userapp.models.dto.mapper.DtoMapperUser;
 import com.ivan.backend.userapp.backend_userapp.models.entities.Role;
 import com.ivan.backend.userapp.backend_userapp.models.entities.User;
 import com.ivan.backend.userapp.backend_userapp.models.request.UserRequest;
@@ -29,19 +32,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> findAll() {
-        return (List<User>) userRepository.findAll();
+    public List<UserDto> findAll() {
+        List<User> users = (List<User>) userRepository.findAll();
+
+        return users.stream().map(u -> DtoMapperUser.builder().setUser(u).build()).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserDto> findById(Long id) {
+        return userRepository.findById(id).map(u -> DtoMapperUser.builder().setUser(u).build());
     }
 
     @Override
     @Transactional
-    public User save(User user) {
+    public UserDto save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Optional<Role> optionalRole = roleRepository.findByName("ROLE_USER");
@@ -52,7 +57,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setRoles(roles);
 
-        return userRepository.save(user);
+        return DtoMapperUser.builder().setUser(userRepository.save(user)).build();
     }
 
     @Override
@@ -63,17 +68,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Optional<User> update(UserRequest user, Long id) {
+    public Optional<UserDto> update(UserRequest user, Long id) {
 
-        Optional<User> optionalUser = findById(id);
-        if (optionalUser.isPresent()) {
-            User userDb = optionalUser.orElseThrow();
+        Optional<User> o = userRepository.findById(id);
+        User userOptional = null;
+        if (o.isPresent()) {
+            User userDb = o.orElseThrow();
             userDb.setUsername(user.getUsername());
             userDb.setEmail(user.getEmail());
-
-            return Optional.ofNullable(save(userDb));
+            userOptional = userRepository.save(userDb);
         }
-        return Optional.empty();
+        return Optional.ofNullable(DtoMapperUser.builder().setUser(userOptional).build());
     }
 
 }

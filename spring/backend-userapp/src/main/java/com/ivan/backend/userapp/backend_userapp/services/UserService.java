@@ -3,18 +3,19 @@ package com.ivan.backend.userapp.backend_userapp.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.ivan.backend.userapp.backend_userapp.models.dto.UserDto;
 import com.ivan.backend.userapp.backend_userapp.models.entities.User;
 import com.ivan.backend.userapp.backend_userapp.models.request.UserRequest;
 
 public interface UserService {
 
-    List<User> findAll();
+    List<UserDto> findAll();
 
-    Optional<User> findById(Long id);
+    Optional<UserDto> findById(Long id);
 
-    User save(User user);
+    UserDto save(User user);
 
-    Optional<User> update(UserRequest user, Long id);
+    Optional<UserDto> update(UserRequest user, Long id);
 
     void remove(Long id);
 }
