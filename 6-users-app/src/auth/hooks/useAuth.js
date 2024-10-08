@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const initialLogin = JSON.parse(sessionStorage.getItem("login")) || {
   isAuth: false,
+  isAdmin: false,
   user: undefined,
 };
 
@@ -13,25 +14,48 @@ export const useAuth = () => {
   const [login, dispatch] = useReducer(loginReducer, initialLogin);
   const navigate = useNavigate();
 
-  const handlerLogin = ({ username, password }) => {
-    const isLogin = loginUser({ username, password });
-    if (isLogin) {
-      const user = { username: "admin" };
-      dispatch({ type: "login", payload: user });
-      sessionStorage.setItem("login", JSON.stringify({ isAuth: true, user }));
-      navigate("/users");
-    } else {
-      Swal.fire(
-        "Error de validacion",
-        "Usuario o contraseña incorrectos",
-        "error"
+  const handlerLogin = async ({ username, password }) => {
+    try {
+      const response = await loginUser({ username, password });
+      const token = response.data.token;
+      const claims = JSON.parse(window.atob(token.split(".")[1]));
+      const user = { username: claims.username };
+      dispatch({
+        type: "login",
+        payload: { user, isAdmin: claims.isAdmin },
+      });
+      sessionStorage.setItem(
+        "login",
+        JSON.stringify({
+          isAuth: true,
+          isAdmin: claims.isAdmin,
+          user,
+        })
       );
+      sessionStorage.setItem("token", "Bearer ${token}");
+      navigate("/users");
+    } catch (error) {
+      if (error.response?.status === 401) {
+        Swal.fire("Error login", "Usuario o contraseña incorrectos", "error");
+      } else if (error.response?.status === 403) {
+        Swal.fire(
+          "Error Login",
+          "No tiene acceso al recurso o permisos",
+          "error"
+        );
+      } else {
+        throw error;
+      }
     }
   };
 
   const handlerLogout = () => {
-    dispatch({ type: "logout" });
+    dispatch({
+      type: "logout",
+    });
     sessionStorage.removeItem("login");
+    sessionStorage.removeItem("token");
+    sessionStorage.clear();
   };
 
   return {
