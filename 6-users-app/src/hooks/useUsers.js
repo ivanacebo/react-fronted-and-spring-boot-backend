@@ -12,6 +12,7 @@ const initialUserForm = {
   username: "",
   password: "",
   email: "",
+  admin: false,
 };
 
 const initialerrors = {
@@ -31,11 +32,17 @@ export const useUsers = () => {
   const [errors, setErrors] = useState(initialerrors);
 
   const getUsers = async () => {
-    const result = await findAll();
-    dispatch({
-      type: "loadingUsers",
-      payload: result.data,
-    });
+    try {
+      const result = await findAll();
+      dispatch({
+        type: "loadingUsers",
+        payload: result.data,
+      });
+    } catch (error) {
+      if (error.response?.status === 401) {
+        handlerLogout();
+      }
+    }
   };
 
   const handlerAddUser = async (user) => {

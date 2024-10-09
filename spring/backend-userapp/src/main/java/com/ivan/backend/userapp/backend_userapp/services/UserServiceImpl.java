@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ivan.backend.userapp.backend_userapp.models.dto.IUser;
 import com.ivan.backend.userapp.backend_userapp.models.dto.UserDto;
 import com.ivan.backend.userapp.backend_userapp.models.dto.mapper.DtoMapperUser;
 import com.ivan.backend.userapp.backend_userapp.models.entities.Role;
@@ -49,13 +50,7 @@ public class UserServiceImpl implements UserService {
     public UserDto save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Optional<Role> optionalRole = roleRepository.findByName("ROLE_USER");
-        List<Role> roles = new ArrayList<>();
-
-        if (optionalRole.isPresent()) {
-            roles.add(optionalRole.orElseThrow());
-        }
-        user.setRoles(roles);
+        user.setRoles(getRoles(user));
 
         return DtoMapperUser.builder().setUser(userRepository.save(user)).build();
     }
@@ -73,12 +68,32 @@ public class UserServiceImpl implements UserService {
         Optional<User> o = userRepository.findById(id);
         User userOptional = null;
         if (o.isPresent()) {
+
             User userDb = o.orElseThrow();
+            userDb.setRoles(getRoles(user));
             userDb.setUsername(user.getUsername());
             userDb.setEmail(user.getEmail());
             userOptional = userRepository.save(userDb);
         }
         return Optional.ofNullable(DtoMapperUser.builder().setUser(userOptional).build());
+    }
+
+    private List<Role> getRoles(IUser user) {
+        Optional<Role> optionalUsuario = roleRepository.findByName("ROLE_USER");
+        List<Role> roles = new ArrayList<>();
+
+        if (optionalUsuario.isPresent()) {
+            roles.add(optionalUsuario.orElseThrow());
+        }
+
+        if (user.isAdmin()) {
+            Optional<Role> optionalAdmin = roleRepository.findByName("ROLE_ADMIN");
+            if (optionalAdmin.isPresent()) {
+                roles.add(optionalAdmin.orElseThrow());
+            }
+        }
+
+        return roles;
     }
 
 }
