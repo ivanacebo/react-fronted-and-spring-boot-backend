@@ -27,8 +27,8 @@ import com.ivan.backend.userapp.backend_userapp.services.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin(originPatterns = "*")
 @RequestMapping("/users")
+@CrossOrigin(originPatterns = "*")
 public class UserController {
 
     @Autowired

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const usersApi = axios.create({
-  baseURL: "http://localhost:8080/users",
+  baseURL: `http://localhost:8080/users`,
 });
 
 usersApi.interceptors.request.use((config) => {
