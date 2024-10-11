@@ -1,16 +1,18 @@
 import { UserModalForm } from "../components/UserModalForm";
 import { UsersList } from "../components/UsersList";
-import { AuthContext } from "../auth/context/AuthContext";
 import { useUsers } from "../hooks/useUsers";
+import { useAuth } from "../auth/hooks/useAuth";
+import { useEffect } from "react";
 
 export const UsersPage = () => {
   const { users, visibleForm, handlerOpenForm, getUsers } = useUsers();
 
-  const { login } = useUsers(AuthContext);
+  const { login } = useAuth();
 
   useEffect(() => {
     getUsers();
   }, []);
+
   return (
     <>
       {!visibleForm || <UserModalForm />}

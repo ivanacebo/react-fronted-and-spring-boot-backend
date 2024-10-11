@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { UserForm } from "../components/UserForm";
 import { useUsers } from "../hooks/useUsers";
+import { useEffect, useState } from "react";
 
 export const RegisterPage = () => {
   const { users = [], initialUserForm } = useUsers();
